@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useGSAP } from "@gsap/react";
@@ -5,100 +6,81 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import Lenis from "lenis";
-import { useTransitionRouter } from "next-view-transitions";
+import { Link, useTransitionRouter } from "next-view-transitions";
+import { carbons } from "../data";
 
-gsap.registerPlugin(ScrollTrigger,SplitText)
+gsap.registerPlugin(ScrollTrigger, SplitText);
 
 export default function Home() {
-  const nvt = useTransitionRouter();
-
-  const sections = [
-    {
-      title: "Alkanes",
-      desc: "Alkanes are saturated hydrocarbons consisting entirely of single bonds between carbon atoms. They are stable, non-reactive under normal conditions, and serve as the primary constituents of fuels such as natural gas, gasoline, and diesel. Their simple molecular structure makes them fundamental in organic chemistry and industrial applications, including lubrication and chemical synthesis.",
-      img: "https://images.unsplash.com/photo-1603126857599-f6e157fa2fe6?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      href: "/alkanes",
-    },
-    {
-      title: "Alkenes",
-      desc: "Alkenes are unsaturated hydrocarbons that contain at least one carbon-carbon double bond, making them more reactive than alkanes. They are crucial in the chemical industry for the production of polymers, plastics, and synthetic materials. Their unique double-bond structure allows them to participate in addition reactions, making them versatile building blocks for complex organic molecules.",
-      img: "https://images.unsplash.com/photo-1693919653649-27492e78899d?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      href: "/alkenes",
-    },
-    {
-      title: "Alkynes",
-      desc: "Alkynes are highly reactive hydrocarbons characterized by at least one carbon-carbon triple bond. They are less common than alkanes and alkenes but are essential in specialized chemical processes and industrial applications. Alkynes are used in organic synthesis, pharmaceuticals, and materials science, where their reactivity allows the creation of complex molecular structures and chemical transformations.",
-      img: "https://images.unsplash.com/photo-1651197122040-3ea0656161ae?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      href: "/alkynes",
-    },
-  ];
+  const router = useTransitionRouter();
 
   useGSAP(() => {
-    
-    const lenis = new Lenis()
+    const lenis = new Lenis();
     gsap.ticker.add((t) => {
-      lenis.raf(t * 1000)
-    })
-    gsap.ticker.lagSmoothing(0)
-    lenis.on("scroll", ScrollTrigger.update)
+      lenis.raf(t * 1000);
+    });
+    gsap.ticker.lagSmoothing(0);
+    lenis.on("scroll", ScrollTrigger.update);
 
-    const descriptions:gsap.DOMTarget[] = gsap.utils.toArray('.description')
-    const headings:gsap.DOMTarget[] = gsap.utils.toArray('.heading')
+    const descriptions: gsap.DOMTarget[] = gsap.utils.toArray(".description");
+    const headings: gsap.DOMTarget[] = gsap.utils.toArray(".heading");
+
+    const splits: SplitText[] = [];
 
     descriptions.forEach((description) => {
-      const split = new SplitText(description,{
-        type:'words',
-        mask:'words'
-      })
+      const split = new SplitText(description, {
+        type: "words",
+        mask: "words",
+      });
+      splits.push(split);
 
-      gsap.set(split.words,{
-        yPercent:100
-      })
+      gsap.set(split.words, {
+        yPercent: 100,
+      });
 
-      gsap.to(split.words,{
-        yPercent:0,
-        stagger:0.0075,
-        delay:.1,
-        ease:'power4.out',
-        scrollTrigger:{
-          trigger:description,
-          start:'top bottom',
-          end:'bottom top',
-          toggleActions:'play reset restart reset'
-        }
-      })
-    })
+      gsap.to(split.words, {
+        yPercent: 0,
+        stagger: 0.0075,
+        delay: 0.1,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: description,
+          start: "top bottom",
+          end: "bottom top",
+          toggleActions: "play reset restart reset",
+        },
+      });
+    });
     headings.forEach((heading) => {
-      const split = new SplitText(heading,{
-        type:'chars',
-        mask:'chars'
-      })
+      const split = new SplitText(heading, {
+        type: "chars",
+        mask: "chars",
+      });
+      splits.push(split);
 
-      gsap.set(split.chars,{
-        yPercent:100
-      })
+      gsap.set(split.chars, {
+        yPercent: 100,
+      });
 
-      gsap.to(split.chars,{
-        yPercent:0,
-        stagger:0.0075,
-        delay:.1,
-        ease:'power4.out',
-        scrollTrigger:{
-          trigger:heading,
-          start:'top bottom',
-          end:'bottom top',
-          toggleActions:'play reset restart reset'
-        }
-      })
-    })
+      gsap.to(split.chars, {
+        yPercent: 0,
+        stagger: 0.0075,
+        delay: 0.1,
+        ease: "power4.out",
+        scrollTrigger: {
+          trigger: heading,
+          start: "top bottom",
+          end: "bottom top",
+          toggleActions: "play reset restart reset",
+        },
+      });
+    });
 
-
-  
     return () => {
-      lenis.destroy()
-    }
-  }, [])
-  
+      lenis.destroy();
+      splits.map((s) => s.revert());
+    };
+  }, []);
 
   return (
     <main className="min-h-screen bg-black text-white px-8 pb-12">
@@ -116,25 +98,32 @@ export default function Home() {
 
       {/* Alternating Sections */}
       <section className="max-w-6xl mx-auto flex flex-col gap-32">
-        {sections.map((section, index) => (
+        {carbons.map((carbon, index) => (
           <div
-            key={section.title}
-            className={`flex flex-col md:flex-row items-center gap-12 ${
+            key={carbon.title}
+            className={`view-transition-image-card flex flex-col md:flex-row items-center gap-12 ${
               index % 2 === 1 ? "md:flex-row-reverse" : ""
             }`}
           >
             {/* Image */}
-            <img
-              src={section.img}
-              alt={section.title}
-              className="w-full md:w-1/2 shadow-xl cursor-pointer transition-transform"
-              onClick={() => nvt.push(section.href)}
-            />
+            <div 
+                className="w-full md:w-1/2 shadow-xl cursor-pointer transition-transform"
+            >
+              <Link href={`/${carbon.id}`}>
+                <img
+                  style={{ viewTransitionName: `image-${carbon.id}` }}
+                  src={carbon.img}
+                  alt={carbon.title}
+                  />
+              </Link>
+                </div>
 
             {/* Description */}
             <div className="md:w-1/2 flex flex-col gap-2">
-              <h2 className="heading text-4xl font-bold">{section.title}</h2>
-              <p className="description text-gray-300 text-md leading-5">{section.desc}</p>
+              <h2 className="heading text-4xl font-bold">{carbon.title}</h2>
+              <p className="description text-gray-300 text-md leading-5">
+                {carbon.desc}
+              </p>
             </div>
           </div>
         ))}
